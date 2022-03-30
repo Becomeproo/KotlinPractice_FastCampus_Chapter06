@@ -28,12 +28,12 @@ class MainActivity : AppCompatActivity() {
     private var tickingSoundId: Int? = null
     private var bellSoundId: Int? = null
 
-    override fun onResume() {
+    override fun onResume() { // 포그라운드로 복귀
         super.onResume()
         soundPool.autoResume()
     }
 
-    override fun onPause() {
+    override fun onPause() { // 백그라운드로 이동
         super.onPause()
         soundPool.autoPause()
     }
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     private fun bindViews() {
         seekBar.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
+                override fun onProgressChanged( // progress 가 움직일 때 마다
                     seekBar: SeekBar?,
                     progress: Int,
                     fromUser: Boolean
@@ -64,11 +64,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                override fun onStartTrackingTouch(seekBar: SeekBar?) { // progress 를 누른 순간 메서드 실행
                     stopCountDown()
                 }
 
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                override fun onStopTrackingTouch(seekBar: SeekBar?) { // progress 를 눌렀다 뗀 순간 메서드 실행
                     seekBar ?: return //좌측에 있는 값이 null일 경우 우측값을 리턴한다.
 
                     if(seekBar.progress == 0) {
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun initSounds() {
+    private fun initSounds() { // raw파일의 오디오 파일 초기화
         tickingSoundId = soundPool.load(this, R.raw.timer_ticking, 1)
         bellSoundId = soundPool.load(this, R.raw.timer_bell, 1)
     }
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
     //return object: CountDownTimer(initialMillis, 1000) {  아래의 표현식으로 변환가능
 
     private fun createCountDownTimer(initialMillis: Long) =
-        object : CountDownTimer(initialMillis, 1000) {
+        object : CountDownTimer(initialMillis, 1000) { // 생성과 즉시 반환
             override fun onTick(millisUntilFinished: Long) {
                 updateRemainTime(millisUntilFinished)
                 updateSeekBar(millisUntilFinished)
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    private fun startCountDown() {
+    private fun startCountDown() { // 타이머 시작
         currentCountDownTimer = createCountDownTimer(seekBar.progress * 60 * 1000L)
         currentCountDownTimer?.start()
 
@@ -110,13 +110,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun stopCountDown() {
+    private fun stopCountDown() { // 타이머 정지
         currentCountDownTimer?.cancel() //현재 진행되고 있는 countdowntimer가 있는지 확인하고 이것이 null값이 아닐 경우 cancel()
         currentCountDownTimer = null
         soundPool.autoPause()
     }
 
-    private fun completeCountDown() {
+    private fun completeCountDown() { // 타이머 완료
         updateRemainTime(0)
         updateSeekBar(0)
 
@@ -127,14 +127,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateRemainTime(remainMillis: Long) {
+    private fun updateRemainTime(remainMillis: Long) { // 텍스트 뷰 시간
         val remainSeconds = remainMillis / 1000
 
         remainMinutesTextView.text = "%02d'".format(remainSeconds / 60)
         remainSecondsTextView.text = "%02d".format(remainSeconds % 60)
     }
 
-    private fun updateSeekBar(remainMillis: Long) {
+    private fun updateSeekBar(remainMillis: Long) { // seekBar UI
         seekBar.progress = (remainMillis / 1000 / 60).toInt()
     }
 }
